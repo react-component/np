@@ -84,4 +84,9 @@ const packagePath = path.resolve(cwd, 'package.json');
   );
 
   await fs.writeFile(packagePath, newPkgText, 'utf-8');
+
+  // Commit and tag
+  await git.add([packagePath]);
+  await git.commit(`chore: bump version to ${selectedVersion}`);
+  await git.addTag(`${pkg.name}@${selectedVersion}`);
 })();
