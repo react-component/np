@@ -82,4 +82,6 @@ const packagePath = path.resolve(cwd, 'package.json');
     /"version":\s*"[^"]+"/,
     `"version": "${selectedVersion}"`,
   );
+
+  await fs.writeFile(packagePath, newPkgText, 'utf-8');
 })();
