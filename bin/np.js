@@ -84,11 +84,13 @@ const packagePath = path.resolve(cwd, 'package.json');
 
   // Commit and tag
   const nextTag = `${pkg.name}@${selectedVersion}`;
+  console.log(chalk.yellow('Commit and tag:'), nextTag);
   await git.add([packagePath]);
   await git.commit(`chore: bump version to ${selectedVersion}`);
   await git.addTag(nextTag);
 
   // Push tag
+  console.log(chalk.yellow('Push origin...'));
   git.push(['origin']);
-  git.push(['origin', nextTag]);
+  git.push(['origin', '--tags']);
 })();
