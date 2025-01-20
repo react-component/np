@@ -78,15 +78,17 @@ const packagePath = path.resolve(cwd, 'package.json');
 
   // Replace version
   const pkgText = await fs.readFile(packagePath, 'utf-8');
-  const newPkgText = pkgText.replace(
-    /"version":\s*"[^"]+"/,
-    `"version": "${selectedVersion}"`,
-  );
+  const newPkgText = pkgText.replace(/"version":\s*"[^"]+"/, `"version": "${selectedVersion}"`);
 
   await fs.writeFile(packagePath, newPkgText, 'utf-8');
 
   // Commit and tag
+  const nextTag = `${pkg.name}@${selectedVersion}`;
   await git.add([packagePath]);
   await git.commit(`chore: bump version to ${selectedVersion}`);
-  await git.addTag(`${pkg.name}@${selectedVersion}`);
+  await git.addTag(nextTag);
+
+  // Push tag
+  git.push(['origin']);
+  git.push(['origin', '--tags']);
 })();
