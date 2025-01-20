@@ -90,5 +90,5 @@ const packagePath = path.resolve(cwd, 'package.json');
 
   // Push tag
   git.push(['origin']);
-  git.push(['origin', '--tags']);
+  git.push(['origin', nextTag]);
 })();
