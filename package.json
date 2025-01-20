@@ -1,0 +1,58 @@
+{
+  "name": "@rc-component/np",
+  "version": "1.0.0",
+  "description": "publish tools for version bumping and changelog generation",
+  "keywords": [
+    "publish"
+  ],
+  "homepage": "http://github.com/react-component/np",
+  "bugs": {
+    "url": "http://github.com/react-component/np/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:react-component/np.git"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "yiminghe@gmail.com"
+  },
+  "main": "./lib/index",
+  "module": "./es/index",
+  "typings": "es/index.d.ts",
+  "bin": {
+    "rc-np": "./bin/np.js"
+  },
+  "files": [
+    "lib",
+    "es"
+  ],
+  "scripts": {
+    "compile": "father build",
+    "prepublishOnly": "npm run compile",
+    "test": "npm run compile && npm run test:only",
+    "test:only": "node ./bin/np.js"
+  },
+  "dependencies": {
+    "@inquirer/prompts": "^7.2.3",
+    "babel-jest": "^29.7.0",
+    "chalk": "^4.1.2",
+    "fs-extra": "^10.1.0",
+    "jest": "^29.2.1",
+    "semver": "^7.6.3",
+    "simple-git": "^3.27.0",
+    "yargs-parser": "^21.1.1"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^9.0.13",
+    "@types/jest": "^29.2.0",
+    "@types/node": "^22.7.5",
+    "eslint": "^7.18.0",
+    "father": "^4.0.0",
+    "prettier": "^2.1.2",
+    "typescript": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.x"
+  }
+}
