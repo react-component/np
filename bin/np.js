@@ -1,25 +1,80 @@
 #!/usr/bin/env node
 
-const path = require("path");
-const semver = require("semver");
-const chalk = require("chalk");
-const simpleGit = require("simple-git");
+const path = require('path');
+const semver = require('semver');
+const chalk = require('chalk');
+const simpleGit = require('simple-git');
+const { confirm, select, input } = require('@inquirer/prompts');
 
 const cwd = process.cwd();
 
-const packagePath = path.resolve(cwd, "package.json");
+const packagePath = path.resolve(cwd, 'package.json');
 
-(async function() {
-// Check local git should not have uncommitted changes
-const git = simpleGit(cwd);
-const status = await git.status();
-console.log(status);
+(async function () {
+  // Check local git should not have uncommitted changes
+  const git = simpleGit(cwd);
+  const status = await git.status();
 
-// Read current version
-const pkg = require(packagePath);
-console.log('当前版本:', chalk.cyan(pkg.version));
+  if (status.files.length) {
+    const confirmContinue = await confirm({
+      default: false,
+      message: '尚有未提交的变更，仍然继续？',
+    });
+
+    if (!confirmContinue) {
+      process.exit(1);
+    } else {
+      console.log(chalk.yellow('继续操作，注意这可能是一种错误...'));
+    }
+  }
+
+  // Read current version
+  const pkg = require(packagePath);
+  console.log('当前版本:', chalk.cyan(pkg.version));
+  const nextPatchVersion = semver.inc(pkg.version, 'patch');
+  const nextMinorVersion = semver.inc(pkg.version, 'minor');
+  const nextMajorVersion = semver.inc(pkg.version, 'major');
+  const nextAlphaVersion = semver.inc(pkg.version, 'prerelease', 'alpha');
+  const nextBetaVersion = semver.inc(pkg.version, 'prerelease', 'beta');
+  const nextRCVersion = semver.inc(pkg.version, 'prerelease', 'rc');
+
+  const versions = Array.from(
+    new Set([
+      nextPatchVersion,
+      nextMinorVersion,
+      nextMajorVersion,
+      nextAlphaVersion,
+      nextBetaVersion,
+      nextRCVersion,
+      '自定义',
+    ]),
+  );
+
+  let selectedVersion = await select({
+    message: '选择发布版本:',
+    choices: versions.map((version) => {
+      return {
+        value: version,
+        name: version,
+      };
+    }),
+  });
+
+  if (selectedVersion === '自定义') {
+    const customVersion = await input({
+      message: '输入自定义版本号:',
+    });
+    selectedVersion = customVersion.trim();
+  }
+
+  // Valid selected version
+  if (!semver.valid(selectedVersion)) {
+    console.log(chalk.red('无效的版本号:', selectedVersion));
+    process.exit(1);
+  }
+
+  console.log('发布版本:', chalk.cyan(selectedVersion));
 })();
-
 
 // const fs = require("fs-extra");
 
