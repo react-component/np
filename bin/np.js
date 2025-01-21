@@ -46,6 +46,7 @@ function getTag(version) {
   const nextPatchVersion = semver.inc(pkg.version, 'patch');
   const nextMinorVersion = semver.inc(pkg.version, 'minor');
   const nextMajorVersion = semver.inc(pkg.version, 'major');
+  const nextPrereleaseVersion = semver.inc(pkg.version, 'prerelease');
   const nextAlphaVersion = semver.inc(pkg.version, 'prerelease', 'alpha');
   const nextBetaVersion = semver.inc(pkg.version, 'prerelease', 'beta');
   const nextRCVersion = semver.inc(pkg.version, 'prerelease', 'rc');
@@ -58,6 +59,7 @@ function getTag(version) {
       nextPatchVersion,
       nextMinorVersion,
       nextMajorVersion,
+      nextPrereleaseVersion,
       nextAlphaVersion,
       nextBetaVersion,
       nextRCVersion,
@@ -117,17 +119,19 @@ function getTag(version) {
   // Diff log from currentTag to nextTag
   const diff = await git.log({ from: currentTag, to: nextTag });
   const commits = diff.all;
-  console.log('>>>', commits);
 
   const commitLines = commits.map(({ message, hash }) => `- ${message}  ${hash}`);
   const releaseNotes =
     commitLines.join('\n') + `\n\n---\n\n${repoUrl}/compare/${currentTag}...${nextTag}`;
 
-  console.log(commitLines);
-  console.log(releaseNotes);
-
   // Create github release
   const releaseURL = new URL(releaseURLStr);
   releaseURL.searchParams.set('tag', nextTag);
+  releaseURL.searchParams.set('body', releaseNotes);
+
+  if (semver.prerelease(selectedVersion)) {
+    releaseURL.searchParams.set('prerelease', 'true');
+  }
+
   console.log(releaseURL);
 })();
