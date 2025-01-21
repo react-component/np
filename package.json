@@ -21,7 +21,7 @@
   "module": "./es/index",
   "typings": "es/index.d.ts",
   "bin": {
-    "rc-np": "./bin/np.js"
+    "rc-np": "./bin/np.mjs"
   },
   "files": [
     "lib",
@@ -31,7 +31,7 @@
     "compile": "father build",
     "prepublishOnly": "npm run compile",
     "test": "npm run compile && npm run test:only",
-    "test:only": "node ./bin/np.js"
+    "test:only": "node ./bin/np.mjs"
   },
   "dependencies": {
     "@inquirer/prompts": "^7.2.3",
@@ -55,5 +55,6 @@
   },
   "engines": {
     "node": ">=18.x"
-  }
+  },
+  "type": "module"
 }
