@@ -37,7 +37,6 @@
     "@inquirer/prompts": "^7.2.3",
     "babel-jest": "^29.7.0",
     "chalk": "^4.1.2",
-    "escape-goat": "^4.0.0",
     "fs-extra": "^10.1.0",
     "jest": "^29.2.1",
     "semver": "^7.6.3",
