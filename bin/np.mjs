@@ -28,7 +28,7 @@ function getTag(version) {
   // - https://github.com/react-component/np.git
   const remote = await git.listRemote(['--get-url', 'origin']);
   const pathname = remote.trim().match(/([^\/:]+\/[^\/]+)\.git$/i)[1];
-  const repoUrl = `https://github.com${pathname}`;
+  const repoUrl = `https://github.com/${pathname}`;
   const releaseURLStr = `${repoUrl}/releases/new`;
 
   if (status.files.length) {
