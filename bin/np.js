@@ -6,15 +6,28 @@ const chalk = require('chalk');
 const simpleGit = require('simple-git');
 const { confirm, select, input } = require('@inquirer/prompts');
 const fs = require('fs-extra');
+const { htmlEscape } = require('escape-goat');
 
 const cwd = process.cwd();
 
 const packagePath = path.resolve(cwd, 'package.json');
+const pkg = require(packagePath);
+
+function getTag(version) {
+  return `${pkg.name}@${version}`;
+}
 
 (async function () {
   // Check local git should not have uncommitted changes
   const git = simpleGit(cwd);
   const status = await git.status();
+
+  // get git repo url
+  const remote = await git.listRemote(['--get-url', 'origin']);
+  const url = new URL(remote);
+  const pathname = url.pathname.replace(/\.git$/, '');
+  const repoUrl = `https://github.com${pathname}`;
+  const releaseURLStr = `${repoUrl}/releases/new`;
 
   if (status.files.length) {
     const confirmContinue = await confirm({
@@ -30,7 +43,6 @@ const packagePath = path.resolve(cwd, 'package.json');
   }
 
   // Read current version
-  const pkg = require(packagePath);
   console.log('当前版本:', chalk.cyan(pkg.version));
   const nextPatchVersion = semver.inc(pkg.version, 'patch');
   const nextMinorVersion = semver.inc(pkg.version, 'minor');
@@ -38,6 +50,9 @@ const packagePath = path.resolve(cwd, 'package.json');
   const nextAlphaVersion = semver.inc(pkg.version, 'prerelease', 'alpha');
   const nextBetaVersion = semver.inc(pkg.version, 'prerelease', 'beta');
   const nextRCVersion = semver.inc(pkg.version, 'prerelease', 'rc');
+
+  // const currentTag = getTag(pkg.version);
+  const currentTag = '@rc-component/np@1.0.0-1';
 
   const versions = Array.from(
     new Set([
@@ -47,6 +62,7 @@ const packagePath = path.resolve(cwd, 'package.json');
       nextAlphaVersion,
       nextBetaVersion,
       nextRCVersion,
+      '不更改，直接发布',
       '自定义',
     ]),
   );
@@ -66,6 +82,8 @@ const packagePath = path.resolve(cwd, 'package.json');
       message: '输入自定义版本号:',
     });
     selectedVersion = customVersion.trim();
+  } else if (selectedVersion === '不更改，直接发布') {
+    selectedVersion = pkg.version;
   }
 
   // Valid selected version
@@ -74,23 +92,43 @@ const packagePath = path.resolve(cwd, 'package.json');
     process.exit(1);
   }
 
-  console.log('发布版本:', pkg.version, '->', chalk.cyan(selectedVersion));
+  let nextTag = currentTag;
+  if (selectedVersion !== pkg.version) {
+    console.log('发布版本:', pkg.version, '->', chalk.cyan(selectedVersion));
 
-  // Replace version
-  const pkgText = await fs.readFile(packagePath, 'utf-8');
-  const newPkgText = pkgText.replace(/"version":\s*"[^"]+"/, `"version": "${selectedVersion}"`);
+    // Replace version
+    const pkgText = await fs.readFile(packagePath, 'utf-8');
+    const newPkgText = pkgText.replace(/"version":\s*"[^"]+"/, `"version": "${selectedVersion}"`);
 
-  await fs.writeFile(packagePath, newPkgText, 'utf-8');
+    await fs.writeFile(packagePath, newPkgText, 'utf-8');
 
-  // Commit and tag
-  const nextTag = `${pkg.name}@${selectedVersion}`;
-  console.log(chalk.yellow('Commit and tag:'), nextTag);
-  await git.add([packagePath]);
-  await git.commit(`chore: bump version to ${selectedVersion}`);
-  await git.addTag(nextTag);
+    // Commit and tag
+    nextTag = getTag(selectedVersion);
+    console.log(chalk.yellow('Commit and tag:'), nextTag);
+    await git.add([packagePath]);
+    await git.commit(`chore: bump version to ${selectedVersion}`);
+    await git.addTag(nextTag);
 
-  // Push tag
-  console.log(chalk.yellow('Push origin...'));
-  git.push(['origin']);
-  git.push(['origin', '--tags']);
+    // Push tag
+    console.log(chalk.yellow('Push origin...'));
+    git.push(['origin']);
+    git.push(['origin', '--tags']);
+  }
+
+  // Diff log from currentTag to nextTag
+  const diff = await git.log({ from: currentTag, to: nextTag });
+  const commits = diff.all;
+  console.log('>>>', commits);
+
+  const commitLines = commits.map(({ message, hash }) => `- ${htmlEscape(message)}  ${hash}`);
+  const releaseNotes =
+    commitLines.join('\n') + `\n\n---\n\n${repoUrl}/compare/${currentTag}...${nextTag}`;
+
+  console.log(commitLines);
+  console.log(releaseNotes);
+
+  // Create github release
+  const releaseURL = new URL(releaseURLStr);
+  releaseURL.searchParams.set('tag', nextTag);
+  console.log(releaseURL);
 })();
