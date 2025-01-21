@@ -6,6 +6,7 @@ const chalk = require('chalk');
 const simpleGit = require('simple-git');
 const { confirm, select, input } = require('@inquirer/prompts');
 const fs = require('fs-extra');
+const open = require('open');
 
 const cwd = process.cwd();
 
@@ -120,7 +121,7 @@ function getTag(version) {
   const diff = await git.log({ from: currentTag, to: nextTag });
   const commits = diff.all;
 
-  const commitLines = commits.map(({ message, hash }) => `- ${message}  ${hash}`);
+  const commitLines = commits.map(({ message, hash }) => `- ${message}  ${hash.slice(0, 7)}`);
   const releaseNotes =
     commitLines.join('\n') + `\n\n---\n\n${repoUrl}/compare/${currentTag}...${nextTag}`;
 
@@ -133,5 +134,5 @@ function getTag(version) {
     releaseURL.searchParams.set('prerelease', 'true');
   }
 
-  console.log(releaseURL);
+  await open(releaseURL.toString());
 })();
