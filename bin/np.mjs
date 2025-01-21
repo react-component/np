@@ -7,6 +7,7 @@ import simpleGit from 'simple-git';
 import { confirm, select, input } from '@inquirer/prompts';
 import fs from 'fs-extra';
 import open from 'open';
+import { htmlEscape } from 'escape-goat';
 
 const cwd = process.cwd();
 
@@ -121,7 +122,9 @@ function getTag(version) {
   const diff = await git.log({ from: currentTag, to: nextTag });
   const commits = diff.all;
 
-  const commitLines = commits.map(({ message, hash }) => `- ${message}  ${hash.slice(0, 7)}`);
+  const commitLines = commits.map(
+    ({ message, hash }) => `- ${htmlEscape(message)}  ${hash.slice(0, 7)}`,
+  );
   const releaseNotes =
     commitLines.join('\n') + `\n\n---\n\n${repoUrl}/compare/${currentTag}...${nextTag}`;
 
