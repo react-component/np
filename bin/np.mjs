@@ -54,8 +54,7 @@ function getTag(version) {
   const nextBetaVersion = semver.inc(pkg.version, 'prerelease', 'beta');
   const nextRCVersion = semver.inc(pkg.version, 'prerelease', 'rc');
 
-  // const currentTag = getTag(pkg.version);
-  const currentTag = '@rc-component/np@1.0.0-1';
+  const currentTag = getTag(pkg.version);
 
   const versions = Array.from(
     new Set([
