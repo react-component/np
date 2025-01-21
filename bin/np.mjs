@@ -23,10 +23,11 @@ function getTag(version) {
   const git = simpleGit(cwd);
   const status = await git.status();
 
-  // get git repo url
+  // get git repo url.e.g.
+  // - git@github.com:react-component/field-form.git
+  // - https://github.com/react-component/np.git
   const remote = await git.listRemote(['--get-url', 'origin']);
-  const url = new URL(remote);
-  const pathname = url.pathname.replace(/\.git$/, '');
+  const pathname = remote.match(/([^\/:]+\/[^\/]+)\.git$/i)[1];
   const repoUrl = `https://github.com${pathname}`;
   const releaseURLStr = `${repoUrl}/releases/new`;
 
