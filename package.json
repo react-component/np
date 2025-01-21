@@ -1,6 +1,6 @@
 {
   "name": "@rc-component/np",
-  "version": "1.0.0-7",
+  "version": "1.0.0-8",
   "description": "publish tools for version bumping and changelog generation",
   "keywords": [
     "publish"
