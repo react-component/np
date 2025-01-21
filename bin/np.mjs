@@ -119,14 +119,23 @@ function getTag(version) {
   }
 
   // Diff log from currentTag to nextTag
-  const diff = await git.log({ from: currentTag, to: nextTag });
-  const commits = diff.all;
+  let commits = [];
+
+  try {
+    const diff = await git.log({ from: currentTag, to: nextTag });
+    commits = diff.all;
+  } catch (e) {
+    console.log(chalk.red('获取 commit log 失败'), e);
+  }
 
   const commitLines = commits.map(
     ({ message, hash }) => `- ${htmlEscape(message)}  ${hash.slice(0, 7)}`,
   );
-  const releaseNotes =
-    commitLines.join('\n') + `\n\n---\n\n${repoUrl}/compare/${currentTag}...${nextTag}`;
+  let releaseNotes = '';
+  if (commitLines.length) {
+    releaseNotes =
+      commitLines.join('\n') + `\n\n---\n\n${repoUrl}/compare/${currentTag}...${nextTag}`;
+  }
 
   // Create github release
   const releaseURL = new URL(releaseURLStr);
