@@ -54,8 +54,30 @@ function getTag(version) {
   const nextBetaVersion = semver.inc(pkg.version, 'prerelease', 'beta');
   const nextRCVersion = semver.inc(pkg.version, 'prerelease', 'rc');
 
+  // Check if no commit
   const currentTag = getTag(pkg.version);
 
+  try {
+    const diff = await git.log({ from: currentTag });
+    const commits = diff.all;
+
+    if (!commits.length) {
+      const confirmContinue = await confirm({
+        default: false,
+        message: '没有代码变更，是否继续发布？',
+      });
+
+      if (!confirmContinue) {
+        process.exit(1);
+      } else {
+        console.log(chalk.yellow('继续操作，注意这可能是一种错误...'), '\n');
+      }
+    }
+  } catch (e) {
+    console.log(chalk.red('获取 commit log 失败'), e);
+  }
+
+  // Show the selection
   const versions = Array.from(
     new Set([
       nextPatchVersion,
