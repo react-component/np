@@ -12,7 +12,7 @@
   </p>
 </div>
 
-<p align="center">English | [简体中文](./README.zh-CN.md)</p>
+<p align="center">English | <a href="./README.zh-CN.md">简体中文</a></p>
 
 ## Highlights
 
@@ -43,18 +43,20 @@ npx rc-np
 ## Development
 
 ```bash
-npm install
+ut install
 npm run compile
 npm run test:only
 ```
 
 ## Release
 
+Maintainers can run the publish guard before releasing this package:
+
 ```bash
 npm run prepublishOnly
 ```
 
-This package is the release helper itself. `prepublishOnly` only verifies the build before publishing.
+This package is the release helper itself, so the guard only verifies the build before publishing.
 
 ## License
 

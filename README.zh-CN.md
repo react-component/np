@@ -12,7 +12,7 @@
   </p>
 </div>
 
-<p align="center">简体中文 | [English](./README.md)</p>
+<p align="center">简体中文 | <a href="./README.md">English</a></p>
 
 ## 亮点
 
@@ -43,18 +43,20 @@ npx rc-np
 ## 本地开发
 
 ```bash
-npm install
+ut install
 npm run compile
 npm run test:only
 ```
 
 ## 发布
 
+维护者发布此包前可以运行发布校验：
+
 ```bash
 npm run prepublishOnly
 ```
 
-这个包本身就是发布辅助工具，`prepublishOnly` 只在发布前校验构建。
+这个包本身就是发布辅助工具，所以发布校验只检查构建产物。
 
 ## 许可证
 
