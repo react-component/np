@@ -43,7 +43,7 @@ npx rc-np
 ## Development
 
 ```bash
-ut install
+npm install
 npm run compile
 npm run test:only
 ```
