@@ -1,7 +1,7 @@
 {
   "name": "@rc-component/np",
   "version": "1.0.4",
-  "description": "publish tools for version bumping and changelog generation",
+  "description": "🚀 Release helper for rc-component packages.",
   "keywords": [
     "publish"
   ],
@@ -31,7 +31,7 @@
     "compile": "father build",
     "prepublishOnly": "npm run compile",
     "test": "npm run compile && npm run test:only",
-    "test:only": "node ./bin/np.mjs"
+    "test:only": "jest --runInBand"
   },
   "dependencies": {
     "@inquirer/prompts": "^7.2.3",
