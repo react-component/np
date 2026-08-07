@@ -34,25 +34,25 @@
     "test:only": "node --experimental-vm-modules ./node_modules/jest/bin/jest.js --runInBand"
   },
   "dependencies": {
-    "@inquirer/prompts": "^7.2.3",
+    "@inquirer/prompts": "^8.5.2",
     "babel-jest": "^30.4.1",
-    "chalk": "^4.1.2",
+    "chalk": "^6.0.0",
     "escape-goat": "^4.0.0",
-    "fs-extra": "^10.1.0",
+    "fs-extra": "^11.4.0",
     "jest": "^30.4.2",
-    "open": "^10.1.0",
+    "open": "^11.0.0",
     "semver": "^7.6.3",
     "simple-git": "^3.27.0",
-    "yargs-parser": "^21.1.1"
+    "yargs-parser": "^22.0.0"
   },
   "devDependencies": {
     "@types/fs-extra": "^11.0.4",
     "@types/jest": "^30.0.0",
     "@types/node": "^26.0.1",
-    "eslint": "^9.39.4",
+    "eslint": "^10.8.0",
     "father": "^4.6.24",
     "prettier": "^3.9.4",
-    "typescript": "^6.0.3"
+    "typescript": "^7.0.2"
   },
   "engines": {
     "node": ">=18.x"
